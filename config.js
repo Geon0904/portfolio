@@ -21,7 +21,7 @@ window.SITE = {
    *  photoRepo 는 이 사이트가 올라가 있는 GitHub 저장소예요.
    *  특정 사진으로 고정하고 싶으면 photo 에 경로를 적으세요. 예) "profile/me.jpg"
    */
-  photoRepo: "Geon0904/Geon0904.github.io",
+  photoRepo: "Geon0904/portfolio",
   photo: "",
 
   links: {
