@@ -33,7 +33,7 @@ window.SITE = {
 
   blog: {
     intro: {
-      ko: "생각, 배운 것, 그리고 독후감들을 기록하고 있어요.",
+      ko: "생각하고, 배우고, 기록하기.",
       en: "Notes on what I learn and build, written in Korean."
     },
     // 대표 글을 보여주고 싶으면 아래처럼 추가하세요. (없으면 비워둬도 돼요)
