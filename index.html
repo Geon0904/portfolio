@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Geon Chang</title>
+<meta name="description" content="Geon Chang — project archive. Games and apps that run right in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="wordmark" href="#about" id="wordmark">Geon Chang</a>
+    <div class="topbar-right">
+      <nav class="nav" aria-label="Menu">
+        <a href="#projects" data-sec="projects" data-i18n="navProjects"></a>
+        <a href="#blog" data-sec="blog" data-i18n="navBlog"></a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ko">KOR</button>
+        <button type="button" data-lang="en">ENG</button>
+      </div>
+      <button class="icon-btn" id="theme" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="about" class="hero">
+    <div class="avatar" id="avatar"></div>
+    <h1 id="name">Geon Chang</h1>
+    <p class="tagline" id="tagline"></p>
+    <p class="bio" id="bio"></p>
+    <div class="links" id="socials"></div>
+  </section>
+
+  <section id="projects" class="section">
+    <div class="section-head">
+      <h2 data-i18n="projects"></h2>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="blog" class="section">
+    <div class="section-head">
+      <h2 data-i18n="blog"></h2>
+    </div>
+    <div id="blogbox"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner" id="footer"></div>
+</footer>
+
+<script src="config.js"></script>
+<script src="projects.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>
