@@ -33,8 +33,8 @@ window.SITE = {
 
   blog: {
     intro: {
-      ko: "개발하면서 배운 것, 만들면서 겪은 일들을 기록하고 있어요.",
-      en: "Notes on what I learn and build, written in Korean."
+      ko: "생각하기, 기록하기, 그리고 공유하기",
+      en: "Notes on what I learn, written in Korean."
     },
     // 대표 글을 보여주고 싶으면 아래처럼 추가하세요. (없으면 비워둬도 돼요)
     // { title: "글 제목", url: "https://blog.naver.com/wkdrjs0904/123456789", date: "2026-10-01" },
