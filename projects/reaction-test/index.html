@@ -70,6 +70,24 @@ main {
 .stats { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 0; font-size: .9rem; color: var(--muted); }
 .stats div { display: flex; align-items: baseline; gap: 8px; }
 .stats dd { margin: 0; color: var(--fg); font: 500 .88rem var(--mono); }
+
+.board { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px 16px 10px; }
+.board-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+.board h2 { margin: 0; font-size: .95rem; font-weight: 600; letter-spacing: -0.01em; }
+.board-note { font-size: .78rem; color: var(--faint); }
+.board ol { list-style: none; margin: 0; padding: 0; }
+.board li {
+  display: grid; grid-template-columns: 2.2em 1fr auto; align-items: baseline; gap: 10px;
+  padding: 8px 2px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums;
+}
+.board li:first-child { border-top: 0; }
+.board .rank { font: 500 .8rem var(--mono); color: var(--faint); }
+.board .ms { font: 500 .95rem var(--mono); }
+.board .date { font: 400 .76rem var(--mono); color: var(--faint); }
+.board li.mine { background: var(--chip); border-radius: 8px; border-top-color: transparent; }
+.board li.mine + li { border-top-color: transparent; }
+.board li.mine .rank { color: var(--fg); }
+.board li.empty { color: var(--faint); font-size: .86rem; display: block; }
 @media (prefers-reduced-motion: reduce) { .pad { transition: none; } }
 </style>
 </head>
@@ -88,6 +106,13 @@ main {
     <div><dt id="avgLabel"></dt><dd id="avg">–</dd></div>
     <div><dt id="bestLabel"></dt><dd id="best">–</dd></div>
   </dl>
+  <section class="board" id="board" hidden>
+    <div class="board-head">
+      <h2 id="boardTitle"></h2>
+      <span class="board-note" id="boardNote"></span>
+    </div>
+    <ol id="boardList"></ol>
+  </section>
 </main>
 <script>
 (function () {
@@ -102,7 +127,9 @@ main {
       left: function (n) { return n + "번 남았어요. 누르면 다음 라운드예요."; },
       roundLabel: function (i) { return i + "회"; },
       again: " 누르면 다시 시작해요.", record: " · 최고 기록이에요!",
-      grades: ["번개 같은 손이에요", "아주 빨라요", "좋아요", "평균이에요", "조금만 더 집중해 봐요"]
+      grades: ["번개 같은 손이에요", "아주 빨라요", "좋아요", "평균이에요", "조금만 더 집중해 봐요"],
+      boardTitle: "전체 랭킹 TOP 5", boardNote: "5회 평균 기준", empty: "아직 기록이 없어요. 첫 번째 기록을 남겨 보세요.",
+      ranked: function (r) { return " · 전체 " + r + "위!"; }, saving: "기록 저장 중…", locale: "ko-KR"
     },
     en: {
       title: "Reaction Test", back: "← All projects", avg: "This run", best: "Best average",
@@ -112,9 +139,13 @@ main {
       left: function (n) { return n + (n === 1 ? " round" : " rounds") + " left. Tap for the next one."; },
       roundLabel: function (i) { return "R" + i; },
       again: " Tap to play again.", record: " · New best!",
-      grades: ["Lightning fast", "Very quick", "Nice", "About average", "Stay focused and try again"]
+      grades: ["Lightning fast", "Very quick", "Nice", "About average", "Stay focused and try again"],
+      boardTitle: "Top 5 leaderboard", boardNote: "5-round average", empty: "No records yet. Set the first one.",
+      ranked: function (r) { return " · #" + r + " overall!"; }, saving: "Saving…", locale: "en-US"
     }
   }[lang];
+  document.getElementById("boardTitle").textContent = TXT.boardTitle;
+  document.getElementById("boardNote").textContent = TXT.boardNote;
   document.documentElement.lang = lang;
   document.title = TXT.title;
   document.getElementById("title").textContent = TXT.title;
@@ -152,12 +183,20 @@ main {
     if (state === "wait") { clearTimeout(timer); state = "early"; show("idle", TXT.early, TXT.earlySub); return; }
     if (state === "early" || state === "result") { startWait(); return; }
     if (state === "go") {
-      times.push(performance.now() - t0); paintRounds();
+      var ms = performance.now() - t0;
+      // 100ms보다 빠르면 반응이 아니라 예측이에요 → 이 라운드를 다시 해요 (랭킹 서버도 이런 기록은 받지 않아요)
+      if (ms < 100) { state = "early"; show("idle", TXT.early, TXT.earlySub); return; }
+      times.push(ms); paintRounds();
       if (times.length >= ROUNDS) {
         var a = avg(), isBest = !best || a < best;
         if (isBest) { best = a; try { localStorage.setItem("reaction-best", String(a)); } catch (e) {} }
         paintRounds(); state = "done";
-        show("done", Math.round(a) + " ms", grade(a) + (isBest ? TXT.record : "") + "." + TXT.again);
+        var msg = grade(a) + (isBest ? TXT.record : "");
+        var end = function (m) { return /[!.?]$/.test(m) ? m : m + "."; };
+        show("done", Math.round(a) + " ms", end(msg) + TXT.again);
+        submit(times.slice(), function (rank) {
+          if (rank && state === "done") small.textContent = msg + TXT.ranked(rank) + TXT.again;
+        });
       } else {
         state = "result";
         show("result", Math.round(times[times.length - 1]) + " ms", TXT.left(ROUNDS - times.length));
@@ -169,8 +208,35 @@ main {
     if (e.target.closest && e.target.closest("a")) return;
     if (e.code === "Space" || e.key === "Enter") { if (e.repeat) return; e.preventDefault(); hit(); }
   });
+  /* ── 전체 랭킹 TOP 5 (이름 없이 기록만) ── */
+  var API = "../../api/scores";
+  var board = document.getElementById("board"), list = document.getElementById("boardList");
+  var fmtDate = function (t) {
+    try { return new Date(t).toLocaleDateString(TXT.locale, { month: "short", day: "numeric" }); } catch (e) { return ""; }
+  };
+  function paintBoard(top, mine) {
+    if (!top.length) { list.innerHTML = '<li class="empty">' + TXT.empty + "</li>"; board.hidden = false; return; }
+    list.innerHTML = top.map(function (r, i) {
+      return '<li' + (mine === i + 1 ? ' class="mine"' : "") + '><span class="rank">' + (i + 1) + '</span><span class="ms">' +
+        r.ms + ' ms</span><span class="date">' + (r.at ? fmtDate(r.at) : "") + "</span></li>";
+    }).join("");
+    board.hidden = false;
+  }
+  function loadBoard() {
+    fetch(API, { cache: "no-store" }).then(function (r) { if (!r.ok) throw r.status; return r.json(); })
+      .then(function (d) { paintBoard(d.top || []); })
+      .catch(function () { board.hidden = true; });   // 랭킹 서버가 없으면 조용히 숨겨요
+  }
+  function submit(t, done) {
+    fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ times: t.map(Math.round) }) })
+      .then(function (r) { if (!r.ok) throw r.status; return r.json(); })
+      .then(function (d) { paintBoard(d.top || [], d.rank); done(d.rank); })
+      .catch(function () { loadBoard(); });
+  }
+
   show("idle", TXT.start, TXT.startSub);
   paintRounds();
+  loadBoard();
 })();
 </script>
 </body>
