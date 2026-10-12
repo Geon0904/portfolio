@@ -1,0 +1,5 @@
+# 프로필 사진(profile 폴더)만 바뀌었을 때는 배포를 건너뛰어요.
+# 사진은 사이트가 GitHub에서 바로 불러오기 때문에 배포가 필요 없어요. (Netlify 크레딧 절약)
+[build]
+  publish = "."
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)profile'"

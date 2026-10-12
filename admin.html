@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>프로필 사진 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+:root {
+  --bg: #fcfcfd; --surface: #ffffff; --fg: #111214; --muted: #696d76; --faint: #a2a5ad; --line: #e9eaee; --chip: #f3f4f6;
+  --accent: #ff6a2b; --ok: #12a150; --bad: #d93a40;
+  --sans: "Geist", "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0c0e; --surface: #131417; --fg: #f1f2f4; --muted: #a0a3ab; --faint: #6c7079; --line: #23252a; --chip: #1b1c20;
+    --accent: #ff7a3d; --ok: #2fbf6f; --bad: #f0565c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0c0e; --surface: #131417; --fg: #f1f2f4; --muted: #a0a3ab; --faint: #6c7079; --line: #23252a; --chip: #1b1c20;
+  --accent: #ff7a3d; --ok: #2fbf6f; --bad: #f0565c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; word-break: keep-all; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 28px 20px 48px; display: flex; flex-direction: column; gap: 20px; }
+.top { display: flex; justify-content: space-between; align-items: center; }
+.top a { color: var(--muted); text-decoration: none; font-size: .9rem; }
+h1 { margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.panel h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+.muted { color: var(--muted); font-size: .9rem; margin: 0; }
+ol { margin: 0; padding-left: 1.2em; color: var(--muted); font-size: .9rem; display: flex; flex-direction: column; gap: 4px; }
+ol b { color: var(--fg); font-weight: 600; }
+ol a { color: var(--fg); }
+label { font-size: .85rem; font-weight: 500; }
+input[type="password"] {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--bg); color: var(--fg); font: 400 .9rem var(--mono);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--fg); font: 500 .95rem var(--sans); cursor: pointer; text-decoration: none;
+}
+.btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.small { padding: 7px 12px; font-size: .82rem; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row .btn { flex: 1; }
+.photos { display: flex; justify-content: center; align-items: center; gap: 18px; padding: 8px 0; }
+.photo { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: .78rem; color: var(--faint); }
+.circle { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; background: var(--chip); box-shadow: 0 0 0 1px var(--line); display: grid; place-items: center; color: var(--faint); font-size: .8rem; }
+.circle img, .circle canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+.arrow { color: var(--faint); font-size: 1.2rem; }
+.slider { display: flex; flex-direction: column; gap: 4px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.status { font-size: .9rem; margin: 0; min-height: 1.4em; }
+.status.ok { color: var(--ok); }
+.status.bad { color: var(--bad); }
+.user { font: 400 .8rem var(--mono); color: var(--muted); }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>프로필 사진</h1>
+    <a href="index.html">← 사이트로</a>
+  </div>
+
+  <!-- 처음 한 번: 이 기기 연결 -->
+  <section class="panel" id="setup" hidden>
+    <h2>이 기기 연결하기 (처음 한 번만)</h2>
+    <p class="muted">사진을 올리려면 GitHub 저장소에 쓸 수 있는 열쇠(토큰)가 필요해요. 열쇠는 이 휴대폰에만 저장되고 다른 곳으로 보내지지 않아요.</p>
+    <ol>
+      <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 토큰 만들기</a>를 열어요.</li>
+      <li>Token name: <b>portfolio-photo</b>, Expiration: <b>1년</b></li>
+      <li>Repository access → <b>Only select repositories</b> → <b>portfolio</b></li>
+      <li>Permissions → Repository permissions → <b>Contents</b> → <b>Read and write</b></li>
+      <li><b>Generate token</b>을 누르고, 나온 토큰을 복사해서 아래에 붙여넣어요.</li>
+    </ol>
+    <label for="token">토큰</label>
+    <input type="password" id="token" autocomplete="off" placeholder="github_pat_...">
+    <button class="btn primary" id="connect" type="button">연결하기</button>
+    <p class="status" id="setupStatus"></p>
+  </section>
+
+  <!-- 사진 바꾸기 -->
+  <section class="panel" id="editor" hidden>
+    <div class="photos">
+      <div class="photo"><div class="circle" id="current">불러오는 중</div>지금</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="photo"><div class="circle" id="preview">새 사진</div>바꿀 사진</div>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <button class="btn" id="pick" type="button">갤러리에서 사진 고르기</button>
+    <div class="slider" id="adjust" hidden>
+      <label for="posY">위아래 위치</label>
+      <input type="range" id="posY" min="0" max="100" value="30">
+      <label for="zoom">확대</label>
+      <input type="range" id="zoom" min="100" max="250" value="100">
+    </div>
+    <button class="btn primary" id="upload" type="button" disabled>이 사진으로 바꾸기</button>
+    <p class="status" id="status"></p>
+  </section>
+
+  <section class="panel" id="account" hidden>
+    <p class="muted">연결된 계정 <span class="user" id="who"></span></p>
+    <div class="row">
+      <button class="btn small" id="logout" type="button">이 기기 연결 끊기</button>
+    </div>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  var REPO = (window.SITE && window.SITE.photoRepo) || "Geon0904/portfolio";
+  var API = "https://api.github.com/repos/" + REPO;
+  var PATH = "profile/photo.jpg";
+  var KEY = "portfolio-gh-token";
+  var $ = function (id) { return document.getElementById(id); };
+  var token = "";
+  try { token = localStorage.getItem(KEY) || ""; } catch (e) {}
+
+  function gh(url, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ "Accept": "application/vnd.github+json", "Authorization": "Bearer " + token }, opts.headers || {});
+    return fetch(url, opts);
+  }
+  function say(el, text, kind) { el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); }
+
+  /* ── 연결 확인 ── */
+  function verify() {
+    return gh(API).then(function (r) {
+      if (r.status === 401) throw new Error("토큰이 맞지 않아요. 복사한 토큰 전체를 다시 붙여넣어 주세요.");
+      if (r.status === 404) throw new Error("portfolio 저장소에 접근할 수 없어요. 토큰 만들 때 portfolio 저장소를 선택했는지 확인해 주세요.");
+      if (!r.ok) throw new Error("GitHub에 연결하지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+      return r.json();
+    }).then(function (repo) {
+      if (repo.permissions && !repo.permissions.push) throw new Error("이 토큰에는 쓰기 권한이 없어요. Contents 권한을 Read and write로 바꿔 주세요.");
+      $("who").textContent = repo.full_name;
+    });
+  }
+  function showEditor() {
+    $("setup").hidden = true; $("editor").hidden = false; $("account").hidden = false;
+    loadCurrent();
+  }
+  function showSetup() {
+    $("setup").hidden = false; $("editor").hidden = true; $("account").hidden = true;
+  }
+  $("connect").addEventListener("click", function () {
+    token = $("token").value.trim();
+    if (!token) { say($("setupStatus"), "토큰을 붙여넣어 주세요.", "bad"); return; }
+    say($("setupStatus"), "확인하는 중…");
+    verify().then(function () {
+      try { localStorage.setItem(KEY, token); } catch (e) {}
+      $("token").value = "";
+      showEditor();
+    }).catch(function (err) { say($("setupStatus"), err.message, "bad"); });
+  });
+  $("logout").addEventListener("click", function () {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    token = ""; showSetup();
+  });
+
+  /* ── 지금 사진 ── */
+  var currentSha = null;
+  function loadCurrent() {
+    gh(API + "/contents/" + PATH + "?ref=main").then(function (r) {
+      if (r.status === 404) { $("current").textContent = "없음"; return null; }
+      return r.json();
+    }).then(function (f) {
+      if (!f) return;
+      currentSha = f.sha;
+      $("current").innerHTML = '<img alt="지금 프로필 사진" src="data:image/jpeg;base64,' + f.content.replace(/\s/g, "") + '">';
+    }).catch(function () { $("current").textContent = "–"; });
+  }
+
+  /* ── 새 사진 고르기 + 정사각형으로 자르기 ── */
+  var img = null, out = document.createElement("canvas");
+  out.width = out.height = 640;
+  $("pick").addEventListener("click", function () { $("file").click(); });
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var url = URL.createObjectURL(f);
+    var im = new Image();
+    im.onload = function () { img = im; $("adjust").hidden = false; $("upload").disabled = false; draw(); say($("status"), ""); };
+    im.onerror = function () { say($("status"), "이 사진 형식은 열 수 없어요. JPG나 PNG로 저장해서 다시 골라 주세요.", "bad"); };
+    im.src = url;
+  });
+  function draw() {
+    if (!img) return;
+    var zoom = $("zoom").value / 100, posY = $("posY").value / 100;
+    var side = Math.min(img.naturalWidth, img.naturalHeight) / zoom;
+    var sx = (img.naturalWidth - side) / 2;
+    var sy = (img.naturalHeight - side) * posY;
+    var g = out.getContext("2d");
+    g.clearRect(0, 0, 640, 640);
+    g.drawImage(img, sx, sy, side, side, 0, 0, 640, 640);
+    var p = $("preview");
+    if (!p.contains(out)) { p.textContent = ""; p.appendChild(out); }
+  }
+  $("posY").addEventListener("input", draw);
+  $("zoom").addEventListener("input", draw);
+
+  /* ── 올리기 ── */
+  $("upload").addEventListener("click", function () {
+    if (!img) return;
+    var btn = this;
+    btn.disabled = true;
+    say($("status"), "올리는 중…");
+    var content = out.toDataURL("image/jpeg", 0.88).split(",")[1];
+    // 최신 sha를 다시 받아서 덮어써요
+    gh(API + "/contents/" + PATH + "?ref=main").then(function (r) { return r.ok ? r.json() : null; }).then(function (f) {
+      var body = { message: "Update profile photo", content: content, branch: "main" };
+      if (f && f.sha) body.sha = f.sha;
+      return gh(API + "/contents/" + PATH, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status === 401 ? "연결이 만료됐어요. ‘이 기기 연결 끊기’를 누르고 다시 연결해 주세요." : "올리지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+      say($("status"), "바꿨어요. 사이트에는 1~2분 안에 반영돼요.", "ok");
+      loadCurrent();
+    }).catch(function (err) {
+      say($("status"), err.message, "bad");
+    }).then(function () { btn.disabled = false; });
+  });
+
+  /* ── 시작 ── */
+  if (token) {
+    verify().then(showEditor).catch(function () { showSetup(); say($("setupStatus"), "다시 연결해 주세요.", "bad"); });
+  } else showSetup();
+})();
+</script>
+</body>
+</html>

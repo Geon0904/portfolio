@@ -17,12 +17,12 @@ window.SITE = {
 
   /*
    * 프로필 사진
-   *  profile 폴더에 사진을 올리기만 하면 가장 최근에 올린 사진이 자동으로 나와요.
-   *  photoRepo 는 이 사이트가 올라가 있는 GitHub 저장소예요.
-   *  특정 사진으로 고정하고 싶으면 photo 에 경로를 적으세요. 예) "profile/me.jpg"
+   *  ""        → 사진 관리 페이지(사이트주소/admin.html)에서 올린 사진을 써요.  ← 지금 설정
+   *  "github"  → GitHub 프로필 사진을 그대로 써요.
+   *  "profile/me.jpg" 처럼 경로를 적으면 그 사진으로 고정돼요.
    */
-  photoRepo: "Geon0904/portfolio",
   photo: "",
+  photoRepo: "Geon0904/portfolio",
 
   links: {
     github:    "https://github.com/Geon0904",
@@ -33,7 +33,7 @@ window.SITE = {
 
   blog: {
     intro: {
-      ko: "생각하고, 배우고, 기록하기.",
+      ko: "개발하면서 배운 것, 만들면서 겪은 일들을 기록하고 있어요.",
       en: "Notes on what I learn and build, written in Korean."
     },
     // 대표 글을 보여주고 싶으면 아래처럼 추가하세요. (없으면 비워둬도 돼요)

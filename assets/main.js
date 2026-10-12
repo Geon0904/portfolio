@@ -123,10 +123,15 @@
         })
         .catch(function () { return imgs[imgs.length - 1]; });
     }).then(function (f) {
-      if (f) setPhoto("profile/" + encodeURIComponent(f.name), f.download_url);
+      // GitHub에서 바로 불러와요 → 사이트를 다시 배포하지 않아도 새 사진이 보여요
+      if (f) setPhoto(f.download_url + "?v=" + f.sha, "profile/" + encodeURIComponent(f.name));
     }).catch(function () {});
   }
-  if (SITE.photo) setPhoto(SITE.photo);
+  var ghUser = (LINKS.github || "").replace(/^https?:\/\/(www\.)?github\.com\//i, "").split("/")[0];
+  if (SITE.photo === "github" && ghUser) {
+    // GitHub 프로필 사진을 그대로 써요. GitHub 앱에서 사진을 바꾸면 여기도 바뀌어요.
+    setPhoto("https://github.com/" + encodeURIComponent(ghUser) + ".png?size=400");
+  } else if (SITE.photo) setPhoto(SITE.photo);
   else if (SITE.photoRepo) findProfilePhoto(SITE.photoRepo);
 
   /* ── 프로젝트 카드 ── */
