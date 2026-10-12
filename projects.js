@@ -1,9 +1,9 @@
 /*
  * ─────────────────────────────────────────────
- *  프로젝트 목록  — 위에 있을수록 먼저 보임
+ *  프로젝트 목록  — 위에 있을수록 먼저 보여요
  * ─────────────────────────────────────────────
  *
- *  ▶ Netlify·Vercel 등에 배포한 앱은 주소 한 줄이면 끝
+ *  ▶ Netlify·Vercel 등에 배포한 앱은 주소 한 줄이면 끝이에요.
  *
  *      { url: "https://my-app.netlify.app" },
  *
@@ -30,10 +30,23 @@
  *    year     만든 해
  *    tags     사용한 기술
  *    code     GitHub 저장소 주소
- *    thumb    썸네일 이미지 
- *    example  예시 표시 — 직접 만든 프로젝트를 올리면 이 블록은 지워도 됨
+ *    thumb    썸네일 이미지 (없으면 자동, 넣는다면 가로 16:10이 예뻐요)
+ *    example  예시 표시 — 직접 만든 프로젝트를 올리면 이 블록은 지워도 돼요.
  */
 window.PROJECTS = [
+
+  {
+    url: "https://geonmoku.netlify.app",
+    title:   { ko: "Geonmoku", en: "Geonmoku" },
+    summary: {
+      ko: "링크 하나로 친구와 바로 두는 실시간 2인 오목.",
+      en: "Real-time two-player Gomoku. Share a link, play instantly."
+    },
+    type: "game",
+    year: 2026,
+    tags: ["JavaScript", "Firebase", "Netlify"],
+    thumb: "assets/geonmoku.jpg"
+  },
 
   {
     url: "https://scent-fit-kappa.vercel.app/",
@@ -44,7 +57,8 @@ window.PROJECTS = [
     },
     type: "app",
     year: 2026,
-    tags: ["Next.js", "Vercel"]
+    tags: ["Next.js", "Vercel"],
+    thumb: "assets/scent-fit.jpg"
   },
 
   {
@@ -56,7 +70,8 @@ window.PROJECTS = [
     },
     type: "game",
     year: 2026,
-    tags: ["HTML", "CSS", "JavaScript"]
+    tags: ["HTML", "CSS", "JavaScript"],
+    thumb: "assets/reaction-test.jpg"
   }
 
 ];
