@@ -36,6 +36,20 @@
 window.PROJECTS = [
 
   {
+    url: "https://cs-interview-notes-flax.vercel.app",
+    title:   { ko: "CS 인터뷰 노트", en: "CS Interview Notes" },
+    summary: {
+      ko: "CS 기초 16개 주제를 일상 비유로 익히고, 면접 문답 567개와 퀴즈로 확인하는 면접 준비 앱이에요. 한국어·영어를 지원하고 오프라인에서도 열려요.",
+      en: "Learn 16 core CS topics through everyday analogies, then test yourself with 567 interview Q&As and quizzes. In Korean and English, and it works offline."
+    },
+    type: "app",
+    year: 2026,
+    tags: ["React", "TypeScript", "Vite", "PWA", "Vercel"],
+    code: "https://github.com/Geon0904/cs-interview-notes",
+    thumb: "assets/cs-interview-notes.jpg"
+  },
+
+  {
     url: "https://geonmoku.netlify.app",
     title:   { ko: "Geonmoku", en: "Geonmoku" },
     summary: {
@@ -52,7 +66,7 @@ window.PROJECTS = [
     url: "https://scent-fit-kappa.vercel.app/",
     title:   { ko: "Scent Fit", en: "Scent Fit" },
     summary: {
-      ko: "AI가 이미지에 맞는 어울리는 향수를 추천해 줘요.",
+      ko: "원하는 향의 분위기와 남성·여성·유니섹스를 고르면, 디자이너·니치·국내 니치 향수 85종 중에서 어울리는 향수를 추천해 줘요.",
       en: "Pick a scent mood and a men's, women's or unisex line, and it recommends perfumes from 85 designer, niche and Korean niche fragrances."
     },
     type: "app",
@@ -65,7 +79,7 @@ window.PROJECTS = [
     url: "projects/reaction-test/index.html",
     title:   { ko: "반응속도 테스트", en: "Reaction Test" },
     summary: {
-      ko: "초록색으로 바뀌는 순간 누르세요.",
+      ko: "초록색으로 바뀌는 순간 누르세요. 5번 측정해서 평균 반응속도를 알려주는 작은 게임이에요.",
       en: "Tap the moment it turns green. Five rounds, then you get your average reaction time."
     },
     type: "game",
